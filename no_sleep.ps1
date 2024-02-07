@@ -12,10 +12,10 @@ if (-not $WindowsPrincipal.IsInRole($AdminRole))
     exit
 }
 
-# deactivate sleep and hibernation mode
-
-# Step 1. Disable sleep and hibernation
+# Step 1. Deactivate sleep and hibernation mode
+# Turn off the hibernation feature
 & powercfg -h off
+# Set the sleep timeout to 0 minutes (AC, battery); computer will never go into sleep mode.
 & powercfg -change -standby-timeout-ac 0
 & powercfg -change -standby-timeout-dc 0
 
@@ -29,12 +29,21 @@ $form.Size = New-Object System.Drawing.Size(350, 100)
 $label = New-Object System.Windows.Forms.Label
 $label.Text = 'PC is active until this window is open'
 $label.AutoSize = $true
-$label.Font = New-Object System.Drawing.Font("Arial",12,[System.Drawing.FontStyle]::Bold)
+$label.Font = New-Object System.Drawing.Font("Arial",11,[System.Drawing.FontStyle]::Bold)
 $form.Controls.Add($label)
 
 $form.ShowDialog() | Out-Null
 
 # Step 3. Re-enable sleep and hibernation
+#sminutes
+$time_standby_ac = 20
+$time_standby_dc = 4
+
 & powercfg -h on
-& powercfg -change -standby-timeout-ac 20
-& powercfg -change -standby-timeout-dc 20
+& powercfg -change -standby-timeout-ac $time_standby_ac
+& powercfg -change -standby-timeout-dc $time_standby_dc
+
+Write-Host "`nComputer standby timeouts (minutes)"
+Write-Host "`Plugged in: $time_standby_ac"
+Write-Host "On battery: $time_standby_dc`n"
+
